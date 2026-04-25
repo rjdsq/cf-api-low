@@ -5,33 +5,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>优选列表</title>
     <style>
-        body { background: #000; color: #00ff41; font-family: monospace; padding: 10px; margin: 0; font-size: 12px; }
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        td { padding: 6px; border: 1px solid rgba(0,255,65,0.1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .ping { text-align: right; font-weight: bold; }
+        body { background: #000; color: #8fb1a8; font-family: monospace; padding: 10px; margin: 0; font-size: 12px; }
+        .stats { margin-bottom: 10px; border-bottom: 1px solid #333; padding-bottom: 5px; color: #666; }
+        table { width: 100%; border-collapse: collapse; }
+        td { padding: 8px 4px; border-bottom: 1px solid #1a1a1a; }
+        .ping { text-align: right; font-weight: bold; width: 60px; }
         .low { color: #00ff41; }
         .mid { color: #ffeb3b; }
         .high { color: #ff4444; }
     </style>
 </head>
 <body>
-    <table id="list"></table>
+    <div class="stats" id="stats">Total: 0</div>
+    <table id="main"></table>
+
     <script>
         const getFlag = (cc) => cc ? cc.toUpperCase().replace(/./g, c => String.fromCodePoint(c.charCodeAt(0) + 127397)) : "🏳️";
+        
         async function render() {
             try {
                 const r = await fetch('data.json?v=' + Date.now());
                 const data = await r.json();
-                document.getElementById('list').innerHTML = data.map(i => {
+                
+                document.getElementById('stats').innerText = `已选: ${data.list.length} / 总数: ${data.total}`;
+                
+                document.getElementById('main').innerHTML = data.list.map(i => {
                     const ms = parseInt(i.ping);
                     const color = ms < 100 ? 'low' : (ms < 180 ? 'mid' : 'high');
-                    // 彻底去掉端口、去掉中括号，只留纯 IP/域名
-                    const pureIp = i.ip.split(':')[0].replace('[','').replace(']','');
                     return `
-                        <tr onclick="navigator.clipboard.writeText('${pureIp}')">
-                            <td style="width:25px;text-align:center;">${getFlag(i.cc)}</td>
-                            <td>${pureIp}</td>
-                            <td class="ping ${color}" style="width:50px;">${ms}ms</td>
+                        <tr onclick="navigator.clipboard.writeText('${i.ip}')">
+                            <td style="width:24px;">${getFlag(i.cc)}</td>
+                            <td style="color:#eee;">${i.ip}</td>
+                            <td class="ping ${color}">${ms}ms</td>
                         </tr>
                     `;
                 }).join('');
