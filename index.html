@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聚源优选测速面板</title>
+    <style>
+        :root { --green: #00ff41; --bg: #0a0a0a; }
+        body { background: var(--bg); color: var(--green); font-family: monospace; padding: 20px; margin: 0; }
+        .box { max-width: 600px; margin: 0 auto; border: 1px solid var(--green); padding: 15px; background: rgba(0,255,65,0.05); }
+        .title { text-align: center; border-bottom: 1px solid var(--green); padding-bottom: 10px; margin-bottom: 20px; font-size: 1.2rem; }
+        .row { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(0,255,65,0.1); cursor: pointer; }
+        .row:hover { background: rgba(0,255,65,0.1); }
+        .item-left { display: flex; align-items: center; gap: 10px; }
+        .flag { font-size: 1.2rem; }
+        .loc { color: #fff; font-size: 0.9rem; }
+        .ping { font-weight: bold; }
+        .low { color: var(--green); }
+        .mid { color: #ffeb3b; }
+        .high { color: #ff4444; }
+        .footer { text-align: center; font-size: 0.7rem; margin-top: 20px; opacity: 0.5; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <div class="title">[ 聚源 API 优选测速 ]</div>
+        <div id="main">加载中...</div>
+        <div class="footer">点击行可直接复制 IP:端口</div>
+    </div>
+
+    <script>
+        const getFlag = (cc) => cc ? cc.toUpperCase().replace(/./g, c => String.fromCodePoint(c.charCodeAt(0) + 127397)) : "🏳️";
+        
+        async function render() {
+            try {
+                const r = await fetch('data.json?v=' + Date.now());
+                const data = await r.json();
+                document.getElementById('main').innerHTML = data.map(i => {
+                    const ms = parseInt(i.ping);
+                    const color = ms < 100 ? 'low' : (ms < 180 ? 'mid' : 'high');
+                    return `
+                        <div class="row" onclick="copy('${i.ip}:443')">
+                            <div class="item-left">
+                                <span class="flag">${getFlag(i.cc)}</span>
+                                <span class="loc">${i.location}</span>
+                            </div>
+                            <div class="ping ${color}">${ms}ms</div>
+                        </div>
+                    `;
+                }).join('');
+            } catch (e) {
+                document.getElementById('main').innerHTML = "暂无测速数据，请等待 Action 运行。";
+            }
+        }
+
+        function copy(txt) {
+            navigator.clipboard.writeText(txt);
+            alert('复制成功: ' + txt);
+        }
+
+        render();
+    </script>
+</body>
+</html>
