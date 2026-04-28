@@ -1,6 +1,6 @@
 # Proxy Node Aggregator
 
-Cloudflare 节点聚合与分发面板，自动查询节点 IP 归属地并转为中文与国旗。
+Cloudflare 节点聚合与分发面板，将多个优选ip整合，自动查询节点 IP 归属地并转为中文与国旗或者选择显示模板。
 
 ## 部署步骤（推荐 Pages 文件夹上传）
 
