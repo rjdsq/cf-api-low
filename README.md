@@ -1,4 +1,4 @@
-# Proxy Node Aggregator
+# CF聚源API
 
 Cloudflare 节点聚合与分发面板，将多个api接口-优选ip -域名混合整合成一个优选优选节点的动态地址，实时更新，自动查询节点 IP 归属地并转为中文与国旗或者选择显示模板。
 
